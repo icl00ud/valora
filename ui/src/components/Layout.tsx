@@ -1,8 +1,24 @@
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Wallet, Receipt, LogOut } from "lucide-react";
+import { useEffect } from "react";
 
 export function Layout() {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch("/api/accounts").then(res => {
+      if (res.status === 401) {
+        navigate("/login");
+      }
+    }).catch(() => {
+    });
+  }, [navigate]);
+
+  const handleLogout = async () => {
+    await fetch("/api/logout", { method: "POST" });
+    navigate("/login");
+  };
 
   const navigation = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -41,7 +57,11 @@ export function Layout() {
           })}
         </nav>
         <div className="absolute bottom-0 w-64 p-4">
-          <button className="flex items-center px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 w-full transition-colors">
+          <button 
+            type="button"
+            onClick={handleLogout}
+            className="flex items-center px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 w-full transition-colors"
+          >
             <LogOut className="mr-3 h-5 w-5 text-gray-400" />
             Sair
           </button>
