@@ -1,6 +1,9 @@
 # Estágio 1: Build do Frontend (React + Vite com Bun)
-FROM oven/bun:1 AS frontend-builder
+FROM oven/bun:alpine AS frontend-builder
 WORKDIR /app/ui
+
+# Install nodejs to ensure Vite can run using its preferred runtime if Bun's compat layer fails
+RUN apk add --no-cache nodejs
 
 # Copiar dependências primeiro para aproveitar o cache do Docker
 COPY ui/package.json ui/bun.lock ./
