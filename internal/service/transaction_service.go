@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"my-finances/internal/models"
-	"my-finances/internal/repository"
+	"valora/internal/models"
+	"valora/internal/repository"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"my-finances/internal/db"
+	"valora/internal/db"
 )
 
 type TransactionService struct {

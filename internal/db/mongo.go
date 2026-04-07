@@ -40,7 +40,7 @@ func InitDB() error {
 	}
 
 	Client = client
-	DB = client.Database("my-finances")
+	DB = client.Database("valora")
 	log.Println("Connected to MongoDB!")
 
 	return nil

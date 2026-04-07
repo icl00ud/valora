@@ -35,7 +35,7 @@ export function Login() {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[#166534]/10 text-[#166534] mb-4">
             <LogIn className="w-6 h-6" />
           </div>
-          <h1 className="text-2xl font-bold text-[#1E293B]">My Finances</h1>
+          <h1 className="text-2xl font-bold text-[#1E293B]">Valora</h1>
           <p className="text-gray-500 mt-2">Digite sua senha para acessar</p>
         </div>
 

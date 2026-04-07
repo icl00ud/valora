@@ -7,10 +7,10 @@ import (
 	"log"
 	"net/http"
 
-	"my-finances/internal/api"
-	"my-finances/internal/db"
-	"my-finances/internal/repository"
-	"my-finances/internal/service"
+	"valora/internal/api"
+	"valora/internal/db"
+	"valora/internal/repository"
+	"valora/internal/service"
 )
 
 //go:embed ui/dist/*

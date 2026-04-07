@@ -30,7 +30,7 @@ export function Layout() {
     <div className="flex h-screen bg-[#F9FAFB]">
       <aside className="w-64 bg-white border-r border-gray-200">
         <div className="h-16 flex items-center px-6 border-b border-gray-200">
-          <span className="text-xl font-bold text-[#1E293B]">My Finances</span>
+          <span className="text-xl font-bold text-[#1E293B]">Valora</span>
         </div>
         <nav className="p-4 space-y-1">
           {navigation.map((item) => {

@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"my-finances/internal/models"
-	"my-finances/internal/service"
+	"valora/internal/models"
+	"valora/internal/service"
 )
 
 type TransactionHandler struct {

@@ -2,8 +2,8 @@ package repository
 
 import (
 	"context"
-	"my-finances/internal/db"
-	"my-finances/internal/models"
+	"valora/internal/db"
+	"valora/internal/models"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
