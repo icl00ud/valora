@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"strings"
 
 	"valora/internal/api"
 	"valora/internal/db"
@@ -52,12 +53,21 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	mux.Handle("/", newSPAHandler(dist))
 
+	log.Println("Server listening on :8080")
+	if err := http.ListenAndServe(":8080", mux); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func newSPAHandler(dist fs.FS) http.Handler {
 	// Handle React Router fallback
 	fileServer := http.FileServer(http.FS(dist))
-	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// If it's an API route that somehow wasn't caught, return 404
-		if r.URL.Path[:4] == "/api" {
+		if strings.HasPrefix(r.URL.Path, "/api") {
 			http.NotFound(w, r)
 			return
 		}
@@ -73,10 +83,5 @@ func main() {
 		// Fallback to index.html for SPA
 		r.URL.Path = "/"
 		fileServer.ServeHTTP(w, r)
-	}))
-
-	log.Println("Server listening on :8080")
-	if err := http.ListenAndServe(":8080", mux); err != nil {
-		log.Fatal(err)
-	}
+	})
 }
