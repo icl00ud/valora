@@ -41,6 +41,11 @@ func InitDB() error {
 
 	Client = client
 	DB = client.Database("valora")
+
+	if err := EnsureIndexes(ctx); err != nil {
+		return fmt.Errorf("failed to ensure indexes: %w", err)
+	}
+
 	log.Println("Connected to MongoDB!")
 
 	return nil

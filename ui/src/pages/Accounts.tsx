@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Modal } from "../components/Modal";
 import type { Account, AccountType } from "../types";
 
@@ -13,16 +13,21 @@ export function Accounts() {
   const [dueDay, setDueDay] = useState("");
   const [currentBalance, setCurrentBalance] = useState("");
 
-  const loadAccounts = () => {
-    fetch("/api/accounts")
-      .then((res) => res.json())
-      .then(setAccounts)
-      .catch(console.error);
-  };
+	const loadAccounts = useCallback(() => {
+		fetch("/api/accounts")
+			.then((res) => {
+				if (!res.ok) {
+					throw new Error("failed to load accounts");
+				}
+				return res.json();
+			})
+			.then(setAccounts)
+			.catch(console.error);
+	}, []);
 
-  useEffect(() => {
-    loadAccounts();
-  }, []);
+	useEffect(() => {
+		loadAccounts();
+	}, [loadAccounts]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,10 +68,11 @@ export function Accounts() {
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg font-semibold text-[#1E293B]">Minhas Contas</h2>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-[#166534] hover:bg-[#14532d] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-        >
+		<button
+			type="button"
+			onClick={() => setIsModalOpen(true)}
+			className="bg-[#166534] hover:bg-[#14532d] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+		>
           Nova Conta
         </button>
       </div>
@@ -74,20 +80,26 @@ export function Accounts() {
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Nova Conta">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
-            <input
-              type="text"
-              required
+					<label htmlFor="account-name" className="block text-sm font-medium text-gray-700 mb-1">
+						Nome
+					</label>
+					<input
+						id="account-name"
+						type="text"
+						required
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-[#166534] focus:outline-none focus:ring-1 focus:ring-[#166534]"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
-            <select
-              value={type}
-              onChange={(e) => setType(e.target.value as AccountType)}
+					<label htmlFor="account-type" className="block text-sm font-medium text-gray-700 mb-1">
+						Tipo
+					</label>
+					<select
+						id="account-type"
+						value={type}
+						onChange={(e) => setType(e.target.value as AccountType)}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-[#166534] focus:outline-none focus:ring-1 focus:ring-[#166534]"
             >
               <option value="checking">Conta Corrente</option>
@@ -99,10 +111,13 @@ export function Accounts() {
           {type === "credit_card" && (
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Dia de Fechamento</label>
-                <input
-                  type="number"
-                  min="1"
+							<label htmlFor="account-closing-day" className="block text-sm font-medium text-gray-700 mb-1">
+								Dia de Fechamento
+							</label>
+							<input
+								id="account-closing-day"
+								type="number"
+								min="1"
                   max="31"
                   required
                   value={closingDay}
@@ -111,10 +126,13 @@ export function Accounts() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Dia de Vencimento</label>
-                <input
-                  type="number"
-                  min="1"
+							<label htmlFor="account-due-day" className="block text-sm font-medium text-gray-700 mb-1">
+								Dia de Vencimento
+							</label>
+							<input
+								id="account-due-day"
+								type="number"
+								min="1"
                   max="31"
                   required
                   value={dueDay}
@@ -126,10 +144,13 @@ export function Accounts() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Saldo Atual (R$)</label>
-            <input
-              type="number"
-              step="0.01"
+					<label htmlFor="account-current-balance" className="block text-sm font-medium text-gray-700 mb-1">
+						Saldo Atual (R$)
+					</label>
+					<input
+						id="account-current-balance"
+						type="number"
+						step="0.01"
               required
               value={currentBalance}
               onChange={(e) => setCurrentBalance(e.target.value)}

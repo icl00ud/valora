@@ -6,7 +6,10 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 	"strings"
+	"time"
 
 	"valora/internal/api"
 	"valora/internal/db"
@@ -25,10 +28,17 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
+	sessionTTL := getSessionTTL()
+
+	userRepo := &repository.UserRepository{}
+	sessionRepo := &repository.SessionRepository{}
+	authService := service.NewAuthService(userRepo, sessionRepo, sessionTTL)
+	authHandler := api.NewAuthHandler(authService)
 
 	// Open Routes
-	mux.HandleFunc("POST /api/login", api.HandleLogin)
-	mux.HandleFunc("POST /api/logout", api.HandleLogout)
+	mux.HandleFunc("POST /api/register", authHandler.HandleRegister)
+	mux.HandleFunc("POST /api/login", authHandler.HandleLogin)
+	mux.HandleFunc("POST /api/logout", authHandler.HandleLogout)
 
 	// Protected Routes (API)
 	protected := http.NewServeMux()
@@ -46,7 +56,7 @@ func main() {
 	protected.HandleFunc("GET /api/transactions", txHandler.HandleGetTransactions)
 	protected.HandleFunc("POST /api/transactions", txHandler.HandleCreateTransaction)
 
-	mux.Handle("/api/", api.AuthMiddleware(protected))
+	mux.Handle("/api/", authHandler.AuthMiddleware(protected))
 
 	// Frontend SPA Routes
 	dist, err := fs.Sub(uiFiles, "ui/dist")
@@ -59,6 +69,20 @@ func main() {
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func getSessionTTL() time.Duration {
+	hoursRaw := os.Getenv("SESSION_TTL_HOURS")
+	if hoursRaw == "" {
+		return 7 * 24 * time.Hour
+	}
+
+	hours, err := strconv.Atoi(hoursRaw)
+	if err != nil || hours <= 0 {
+		return 7 * 24 * time.Hour
+	}
+
+	return time.Duration(hours) * time.Hour
 }
 
 func newSPAHandler(dist fs.FS) http.Handler {

@@ -12,6 +12,7 @@ const (
 
 type Account struct {
 	ID             primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	UserID         primitive.ObjectID `bson:"user_id" json:"-"`
 	Name           string             `bson:"name" json:"name"`
 	Type           AccountType        `bson:"type" json:"type"`
 	ClosingDay     *int               `bson:"closing_day,omitempty" json:"closingDay,omitempty"`

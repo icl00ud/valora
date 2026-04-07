@@ -14,12 +14,17 @@ const data = [
 export function Dashboard() {
   const [balance, setBalance] = useState(0);
 
-  useEffect(() => {
-    fetch("/api/accounts")
-      .then((res) => res.json())
-      .then((data) => {
-        const total = data.reduce((acc: number, curr: any) => acc + curr.currentBalance, 0);
-        setBalance(total);
+	useEffect(() => {
+		fetch("/api/accounts")
+			.then((res) => {
+				if (!res.ok) {
+					throw new Error("failed to load accounts");
+				}
+				return res.json();
+			})
+			.then((data) => {
+				const total = data.reduce((acc: number, curr: any) => acc + curr.currentBalance, 0);
+				setBalance(total);
       })
       .catch((err) => console.error(err));
   }, []);

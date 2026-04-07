@@ -11,16 +11,17 @@ import (
 
 type TransactionRepository struct{}
 
-func (r *TransactionRepository) CreateTransaction(ctx context.Context, transaction *models.Transaction) error {
+func (r *TransactionRepository) CreateTransaction(ctx context.Context, userID primitive.ObjectID, transaction *models.Transaction) error {
 	transaction.ID = primitive.NewObjectID()
+	transaction.UserID = userID
 	collection := db.DB.Collection("transactions")
 	_, err := collection.InsertOne(ctx, transaction)
 	return err
 }
 
-func (r *TransactionRepository) GetTransactions(ctx context.Context) ([]models.Transaction, error) {
+func (r *TransactionRepository) GetTransactions(ctx context.Context, userID primitive.ObjectID) ([]models.Transaction, error) {
 	collection := db.DB.Collection("transactions")
-	cursor, err := collection.Find(ctx, bson.M{})
+	cursor, err := collection.Find(ctx, bson.M{"user_id": userID})
 	if err != nil {
 		return nil, err
 	}

@@ -1,11 +1,12 @@
 package api
 
 import (
-	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"valora/internal/models"
+	"valora/internal/repository"
 	"valora/internal/service"
 )
 
@@ -18,7 +19,13 @@ func NewTransactionHandler(svc *service.TransactionService) *TransactionHandler 
 }
 
 func (h *TransactionHandler) HandleGetTransactions(w http.ResponseWriter, r *http.Request) {
-	transactions, err := h.svc.GetTransactions(context.Background())
+	userID, ok := userIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	transactions, err := h.svc.GetTransactions(r.Context(), userID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -32,14 +39,24 @@ func (h *TransactionHandler) HandleGetTransactions(w http.ResponseWriter, r *htt
 }
 
 func (h *TransactionHandler) HandleCreateTransaction(w http.ResponseWriter, r *http.Request) {
+	userID, ok := userIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
 	var transaction models.Transaction
 	if err := json.NewDecoder(r.Body).Decode(&transaction); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err := h.svc.CreateTransaction(context.Background(), &transaction); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if err := h.svc.CreateTransaction(r.Context(), userID, &transaction); err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			http.Error(w, "Account not found", http.StatusNotFound)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusForbidden)
 		return
 	}
 

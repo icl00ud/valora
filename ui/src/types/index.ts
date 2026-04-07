@@ -10,12 +10,16 @@ export interface Account {
 }
 
 export interface Transaction {
-  id?: string;
-  accountId: string;
-  amount: number;
-  category: string;
-  description: string;
-  date: string;
-  effectiveDate?: string;
-  isPaid: boolean;
+	id?: string;
+	accountId: string;
+	amount: number;
+	category: string;
+	description: string;
+	date: string;
+	effectiveDate?: string;
+	isPaid: boolean;
+}
+
+export interface AuthResponse {
+	message: string;
 }

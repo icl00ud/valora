@@ -6,29 +6,36 @@ import (
 	"time"
 
 	"valora/internal/models"
-	"valora/internal/repository"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"valora/internal/db"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type TransactionService struct {
-	txRepo      *repository.TransactionRepository
-	accountRepo *repository.AccountRepository
+	txRepo      transactionStore
+	accountRepo accountStore
 }
 
-func NewTransactionService(txRepo *repository.TransactionRepository, accRepo *repository.AccountRepository) *TransactionService {
+type transactionStore interface {
+	CreateTransaction(ctx context.Context, userID primitive.ObjectID, transaction *models.Transaction) error
+	GetTransactions(ctx context.Context, userID primitive.ObjectID) ([]models.Transaction, error)
+}
+
+type accountStore interface {
+	FindByIDAndUser(ctx context.Context, accountID, userID primitive.ObjectID) (*models.Account, error)
+	IncrementBalance(ctx context.Context, accountID, userID primitive.ObjectID, amount float64) error
+}
+
+func NewTransactionService(txRepo transactionStore, accRepo accountStore) *TransactionService {
 	return &TransactionService{
 		txRepo:      txRepo,
 		accountRepo: accRepo,
 	}
 }
 
-func (s *TransactionService) CreateTransaction(ctx context.Context, tx *models.Transaction) error {
-	var account models.Account
-	err := db.DB.Collection("accounts").FindOne(ctx, bson.M{"_id": tx.AccountID}).Decode(&account)
+func (s *TransactionService) CreateTransaction(ctx context.Context, userID primitive.ObjectID, tx *models.Transaction) error {
+	account, err := s.accountRepo.FindByIDAndUser(ctx, tx.AccountID, userID)
 	if err != nil {
-		return fmt.Errorf("failed to find account: %w", err)
+		return err
 	}
 
 	if account.Type == models.CreditCard {
@@ -65,18 +72,13 @@ func (s *TransactionService) CreateTransaction(ctx context.Context, tx *models.T
 		tx.EffectiveDate = tx.Date
 	}
 
-	if err := s.txRepo.CreateTransaction(ctx, tx); err != nil {
+	if err := s.txRepo.CreateTransaction(ctx, userID, tx); err != nil {
 		return err
 	}
 
 	// Update account balance
 	if tx.EffectiveDate.Before(time.Now()) || tx.EffectiveDate.Equal(time.Now()) {
-		_, err = db.DB.Collection("accounts").UpdateOne(
-			ctx,
-			bson.M{"_id": account.ID},
-			bson.M{"$inc": bson.M{"current_balance": tx.Amount}},
-		)
-		if err != nil {
+		if err := s.accountRepo.IncrementBalance(ctx, account.ID, userID, tx.Amount); err != nil {
 			return fmt.Errorf("failed to update account balance: %w", err)
 		}
 	}
@@ -84,6 +86,6 @@ func (s *TransactionService) CreateTransaction(ctx context.Context, tx *models.T
 	return nil
 }
 
-func (s *TransactionService) GetTransactions(ctx context.Context) ([]models.Transaction, error) {
-	return s.txRepo.GetTransactions(ctx)
+func (s *TransactionService) GetTransactions(ctx context.Context, userID primitive.ObjectID) ([]models.Transaction, error) {
+	return s.txRepo.GetTransactions(ctx, userID)
 }

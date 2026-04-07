@@ -6,19 +6,22 @@ export function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetch("/api/accounts").then(res => {
-      if (res.status === 401) {
-        navigate("/login");
-      }
-    }).catch(() => {
-    });
-  }, [navigate]);
+	useEffect(() => {
+		fetch("/api/accounts")
+			.then((res) => {
+				if (res.status === 401) {
+					navigate("/login");
+				}
+			})
+			.catch(() => {
+				navigate("/login");
+			});
+	}, [navigate]);
 
   const handleLogout = async () => {
-    await fetch("/api/logout", { method: "POST" });
-    navigate("/login");
-  };
+		await fetch("/api/logout", { method: "POST" });
+		navigate("/login");
+	};
 
   const navigation = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
