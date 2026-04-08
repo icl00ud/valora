@@ -1,17 +1,86 @@
 @import "tailwindcss";
 
+@import "@fontsource/space-grotesk/400.css";
+@import "@fontsource/space-grotesk/500.css";
+@import "@fontsource/space-grotesk/600.css";
+@import "@fontsource/space-grotesk/700.css";
+@import "@fontsource/dm-sans/400.css";
+@import "@fontsource/dm-sans/500.css";
+@import "@fontsource/dm-sans/700.css";
+
 :root {
-	--color-bg-primary: #f9fafb;
+	--color-bg-primary: #f0f0f0;
 	--color-bg-card: #ffffff;
-	--color-primary: #166534;
-	--color-success: #059669;
-	--color-danger: #e11d48;
-	--color-text-main: #1e293b;
-	--color-text-muted: #64748b;
+	--color-primary: #000000;
+	--color-success: #000000;
+	--color-danger: #000000;
+	--color-text-main: #000000;
+	--color-text-muted: #555555;
+	--border-sharp: 0px;
 }
 
 body {
 	background-color: var(--color-bg-primary);
 	color: var(--color-text-main);
-	font-family: "Satoshi", "Inter", sans-serif;
+	font-family: "DM Sans", sans-serif;
+	-webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.display-font {
+	font-family: "Space Grotesk", sans-serif;
+	letter-spacing: -0.02em;
+}
+
+/* Brutalist sharp styling */
+.sharp-border {
+	border: 2px solid #000;
+	box-shadow: 4px 4px 0px #000;
+	border-radius: 0 !important;
+	transition: all 0.2s ease;
+}
+
+.sharp-border:hover {
+	transform: translate(-2px, -2px);
+	box-shadow: 6px 6px 0px #000;
+}
+
+.sharp-border:active {
+	transform: translate(2px, 2px);
+	box-shadow: 2px 2px 0px #000;
+}
+
+input,
+button,
+select,
+textarea {
+	border-radius: 0 !important;
+}
+
+.card {
+	background: #fff;
+	border: 2px solid #000;
+	box-shadow: 4px 4px 0px #000;
+	border-radius: 0 !important;
+}
+
+table th {
+	border-bottom: 2px solid #000 !important;
+	color: #000 !important;
+	font-family: "Space Grotesk", sans-serif;
+	font-weight: 700 !important;
+	text-transform: uppercase;
+}
+
+table td {
+	border-bottom: 1px solid #e5e5e5 !important;
+}
+
+table tr:hover td {
+	background-color: #f8f8f8 !important;
 }

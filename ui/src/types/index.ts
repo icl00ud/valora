@@ -1,12 +1,12 @@
-export type AccountType = 'checking' | 'savings' | 'credit_card';
+export type AccountType = "checking" | "savings" | "credit_card";
 
 export interface Account {
-  id?: string;
-  name: string;
-  type: AccountType;
-  closingDay?: number;
-  dueDay?: number;
-  currentBalance: number;
+	id?: string;
+	name: string;
+	type: AccountType;
+	closingDay?: number;
+	dueDay?: number;
+	currentBalance: number;
 }
 
 export interface Transaction {

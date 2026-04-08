@@ -1,10 +1,10 @@
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Wallet, Receipt, LogOut } from "lucide-react";
+import { LayoutDashboard, LogOut, Receipt, Wallet } from "lucide-react";
 import { useEffect } from "react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 export function Layout() {
-  const location = useLocation();
-  const navigate = useNavigate();
+	const location = useLocation();
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		fetch("/api/accounts")
@@ -18,75 +18,80 @@ export function Layout() {
 			});
 	}, [navigate]);
 
-  const handleLogout = async () => {
+	const handleLogout = async () => {
 		await fetch("/api/logout", { method: "POST" });
 		navigate("/login");
 	};
 
-  const navigation = [
-    { name: "Dashboard", href: "/", icon: LayoutDashboard },
-    { name: "Contas", href: "/accounts", icon: Wallet },
-    { name: "Lançamentos", href: "/transactions", icon: Receipt },
-  ];
+	const navigation = [
+		{ name: "DASHBOARD", href: "/", icon: LayoutDashboard },
+		{ name: "CONTAS", href: "/accounts", icon: Wallet },
+		{ name: "LANÇAMENTOS", href: "/transactions", icon: Receipt },
+	];
 
-  return (
-    <div className="flex h-screen bg-[#F9FAFB]">
-      <aside className="w-64 bg-white border-r border-gray-200">
-        <div className="h-16 flex items-center px-6 border-b border-gray-200">
-          <span className="text-xl font-bold text-[#1E293B]">Valora</span>
-        </div>
-        <nav className="p-4 space-y-1">
-          {navigation.map((item) => {
-            const isActive = location.pathname === item.href;
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.name}
-                to={item.href}
-                className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                  isActive
-                    ? "bg-[#059669]/10 text-[#166534]"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                }`}
-              >
-                <Icon
-                  className={`mr-3 h-5 w-5 ${
-                    isActive ? "text-[#166534]" : "text-gray-400"
-                  }`}
-                />
-                {item.name}
-              </Link>
-            );
-          })}
-        </nav>
-        <div className="absolute bottom-0 w-64 p-4">
-          <button 
-            type="button"
-            onClick={handleLogout}
-            className="flex items-center px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 w-full transition-colors"
-          >
-            <LogOut className="mr-3 h-5 w-5 text-gray-400" />
-            Sair
-          </button>
-        </div>
-      </aside>
+	return (
+		<div className="flex h-screen bg-[#F4F4F0] text-black">
+			<aside className="w-72 bg-white border-r-2 border-black flex flex-col shadow-[4px_0_0_#000] z-10 relative">
+				<div className="h-20 flex items-center px-8 border-b-2 border-black bg-[#E2FF3D]">
+					<span className="text-3xl font-black tracking-tighter uppercase display-font">
+						Valora
+					</span>
+				</div>
+				<nav className="p-6 space-y-3 flex-1">
+					{navigation.map((item) => {
+						const isActive = location.pathname === item.href;
+						const Icon = item.icon;
+						return (
+							<Link
+								key={item.name}
+								to={item.href}
+								className={`flex items-center px-4 py-3 text-sm font-bold tracking-tight uppercase transition-all border-2 ${
+									isActive
+										? "bg-[#E2FF3D] border-black shadow-[4px_4px_0_#000] translate-x-[-2px] translate-y-[-2px]"
+										: "bg-transparent border-transparent hover:border-black hover:bg-gray-50"
+								}`}
+							>
+								<Icon
+									className={`mr-4 h-5 w-5 ${
+										isActive ? "text-black" : "text-gray-500"
+									}`}
+									strokeWidth={2.5}
+								/>
+								{item.name}
+							</Link>
+						);
+					})}
+				</nav>
+				<div className="p-6 border-t-2 border-black bg-gray-50">
+					<button
+						type="button"
+						onClick={handleLogout}
+						className="flex items-center justify-center px-4 py-3 font-bold tracking-tight uppercase border-2 border-black bg-white hover:bg-[#FF3366] hover:text-white w-full transition-all sharp-border"
+					>
+						<LogOut className="mr-3 h-5 w-5" strokeWidth={2.5} />
+						SAIR
+					</button>
+				</div>
+			</aside>
 
-      <main className="flex-1 overflow-y-auto">
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8">
-          <h1 className="text-xl font-semibold text-[#1E293B]">
-            {navigation.find((n) => n.href === location.pathname)?.name ||
-              "Dashboard"}
-          </h1>
-          <div className="flex items-center gap-4">
-            <div className="h-8 w-8 rounded-full bg-[#166534] flex items-center justify-center text-white font-medium">
-              U
-            </div>
-          </div>
-        </header>
-        <div className="p-8 max-w-7xl mx-auto">
-          <Outlet />
-        </div>
-      </main>
-    </div>
-  );
+			<main className="flex-1 flex flex-col overflow-hidden bg-[#F4F4F0]">
+				<header className="h-20 bg-white border-b-2 border-black flex items-center justify-between px-10 shadow-[0_4px_0_#000] z-0 relative">
+					<h1 className="text-2xl font-black uppercase tracking-tight display-font">
+						{navigation.find((n) => n.href === location.pathname)?.name ||
+							"DASHBOARD"}
+					</h1>
+					<div className="flex items-center gap-4">
+						<div className="h-10 w-10 border-2 border-black bg-[#166534] flex items-center justify-center text-white font-bold shadow-[2px_2px_0_#000]">
+							U
+						</div>
+					</div>
+				</header>
+				<div className="p-10 flex-1 overflow-y-auto relative z-0">
+					<div className="max-w-7xl mx-auto">
+						<Outlet />
+					</div>
+				</div>
+			</main>
+		</div>
+	);
 }
