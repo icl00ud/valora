@@ -1,4 +1,4 @@
-# Valora - Ambiente Local de Desenvolvimento
+# Valora - Ambiente Local de Desenvolvimento 🧪
 
 Este projeto roda com stack completa em containers para desenvolvimento local com recarga em tempo real:
 
